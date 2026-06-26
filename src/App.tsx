@@ -38,22 +38,9 @@ type RequestDetail = {
 };
 
 export default function App() {
-  // Theme Toggle State (Light / Dark)
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
-
-  // Authentication State (Simulated)
-  const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem("isLoggedIn") === "true");
-  const [activeRole, setActiveRole] = useState(() => sessionStorage.getItem("activeRole") || "Pelapor");
-  const [activeName, setActiveName] = useState(() => sessionStorage.getItem("activeName") || "Pelapor");
-
-  // Login Form State
-  const [loginRole, setLoginRole] = useState("Pelapor");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginFailed, setLoginFailed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Active Role switcher state
+  const [activeRole, setActiveRole] = useState("Pelapor");
+  const [activeName, setActiveName] = useState("Rian (Mahasiswa)");
 
   // Lists & Filters
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
@@ -61,7 +48,7 @@ export default function App() {
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
-  // Detail Modal / Panel
+  // Detail Modal / View
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<RequestDetail | null>(null);
 
@@ -78,31 +65,20 @@ export default function App() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Apply Theme class to document body
+  // Sync simulated identity to role choice
   useEffect(() => {
-    document.body.className = "theme-" + theme;
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  // Sync role switcher to role name on changes (For Admin simulator mode)
-  useEffect(() => {
-    let name = activeName;
     if (activeRole === "Pelapor") {
-      name = "Pelapor";
+      setActiveName("Rian (Mahasiswa)");
     } else if (activeRole === "Administrator") {
-      name = "Admin Sarpras";
-    } else if (activeRole === "Teknisi") {
-      if (name !== "Budi (Teknisi)" && name !== "Agus (Teknisi)") {
-        name = "Budi (Teknisi)";
-      }
+      setActiveName("Admin Sarpras");
+    } else if (activeRole === "Teknisi - Budi") {
+      setActiveName("Budi (Teknisi)");
+    } else if (activeRole === "Teknisi - Agus") {
+      setActiveName("Agus (Teknisi)");
     } else if (activeRole === "Manajer Fasilitas") {
-      name = "Manajer Sarpras";
+      setActiveName("Manajer Sarpras");
     }
-    setActiveName(name);
-    sessionStorage.setItem("activeRole", activeRole);
-    sessionStorage.setItem("activeName", name);
-
-    // Clean details modal to prevent cross-role actions
+    // Clean details panel when swapping roles to avoid invalid role actions
     setSelectedRequestId(null);
     setDetailData(null);
   }, [activeRole]);
@@ -131,7 +107,7 @@ export default function App() {
     }
   }
 
-  // Load selected request detail (comments & log history)
+  // Load request details (comments & history log)
   async function loadRequestDetail(id: string) {
     try {
       const response = await fetch(`/api/requests/${id}`);
@@ -147,86 +123,20 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (isLoggedIn) {
-      loadRequests();
-    }
-  }, [searchQuery, statusFilter, categoryFilter, activeRole, activeName, isLoggedIn]);
+    loadRequests();
+  }, [searchQuery, statusFilter, categoryFilter, activeRole, activeName]);
 
   useEffect(() => {
-    if (selectedRequestId && isLoggedIn) {
+    if (selectedRequestId) {
       loadRequestDetail(selectedRequestId);
     }
-  }, [selectedRequestId, isLoggedIn]);
+  }, [selectedRequestId]);
 
-  // Perform mock login check
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginError("");
-
-    let isValid = false;
-    let name = "";
-
-    const userClean = username.trim().toLowerCase();
-
-    if (loginRole === "Pelapor") {
-      if (userClean === "pelapor" && password === "pelapor123") {
-        isValid = true;
-        name = "Pelapor";
-      }
-    } else if (loginRole === "Administrator") {
-      if (userClean === "admin" && password === "admin123") {
-        isValid = true;
-        name = "Admin Sarpras";
-      }
-    } else if (loginRole === "Teknisi") {
-      if (userClean === "budi" && password === "teknisi123") {
-        isValid = true;
-        name = "Budi (Teknisi)";
-      } else if (userClean === "agus" && password === "teknisi123") {
-        isValid = true;
-        name = "Agus (Teknisi)";
-      }
-    } else if (loginRole === "Manajer Fasilitas") {
-      if (userClean === "manajer" && password === "manajer123") {
-        isValid = true;
-        name = "Manajer Sarpras";
-      }
-    }
-
-    if (!isValid) {
-      setLoginError("Nama pengguna atau kata sandi simulasi salah.");
-      setLoginFailed(true);
-      setTimeout(() => setLoginFailed(false), 500);
-      return;
-    }
-
-    sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.setItem("activeRole", loginRole);
-    sessionStorage.setItem("activeName", name);
-
-    setActiveRole(loginRole);
-    setActiveName(name);
-    setIsLoggedIn(true);
-    setUsername("");
-    setPassword("");
-  }
-
-  // Logout session
-  function handleLogout() {
-    sessionStorage.clear();
-    setIsLoggedIn(false);
-    setSelectedRequestId(null);
-    setDetailData(null);
-    setSuccessMessage("");
-    setErrorMessage("");
-  }
-
-  // Form submission: Create new report
+  // Create report
   async function handleSubmitRequest(event: React.FormEvent) {
     event.preventDefault();
     setSuccessMessage("");
     setErrorMessage("");
-    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/requests", {
@@ -238,7 +148,6 @@ export default function App() {
 
       if (!response.ok) {
         setErrorMessage(result.error || "Gagal membuat laporan.");
-        setIsSubmitting(false);
         return;
       }
 
@@ -247,11 +156,9 @@ export default function App() {
       setDescription("");
       setLocation("");
       setCategory("AC");
-      await loadRequests();
+      loadRequests();
     } catch (err) {
       setErrorMessage("Terjadi kesalahan jaringan saat mengirim laporan.");
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -324,7 +231,7 @@ export default function App() {
     }
   }
 
-  // Visual Formatter Helpers
+  // Formatter utilities
   function getStatusBadgeClass(status: string) {
     switch (status) {
       case "SUBMITTED": return "badge-status-submitted";
@@ -369,136 +276,12 @@ export default function App() {
     return "step-node";
   }
 
-  // CSS bar chart calculator for manager stats
+  // Pure CSS Chart breakdown calculator
   const totalCount = requests.length;
   function getCategoryStats(catName: string) {
     const count = requests.filter(r => r.category === catName).length;
     const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
     return { count, percentage };
-  }
-
-  // Render Login screen if not authenticated
-  if (!isLoggedIn) {
-    return (
-      <div className="app-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "90vh" }}>
-        <div className={`panel ${loginFailed ? "shake-error" : ""}`} style={{ width: "100%", maxWidth: "450px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <div className="brand-section">
-              <div className="brand-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" style={{ width: "24px", height: "24px", color: "#fff" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </div>
-              <div className="brand-text">
-                <h1>Campus Portal</h1>
-                <p>Silakan masuk untuk melanjutkan</p>
-              </div>
-            </div>
-            {/* Theme switcher */}
-            <button
-              className="button-secondary"
-              style={{ padding: "8px", borderRadius: "50%" }}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.364-6.364l-1.591 1.591M6.009 17.99l-1.591 1.591m12.982 0l-1.591-1.591M6.009 6.009L4.418 4.418m11.582 11.582A9 9 0 113.63 8.368a9 9 0 0012.37 12.37z" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                </svg>
-              )}
-            </button>
-          </div>
-
-          {loginError && (
-            <div className="alert alert-error" style={{ padding: "10px 14px", fontSize: "13px" }}>
-              {loginError}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label className="form-label">Pilih Peran Anda</label>
-              <select
-                className="form-select"
-                value={loginRole}
-                onChange={(e) => setLoginRole(e.target.value)}
-              >
-                <option value="Pelapor">Pelapor (Mahasiswa/Dosen)</option>
-                <option value="Administrator">Administrator Sarpras</option>
-                <option value="Teknisi">Teknisi (Staf Perbaikan)</option>
-                <option value="Manajer Fasilitas">Manajer Fasilitas (FM)</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nama Pengguna (Username)</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder={
-                  loginRole === "Pelapor" ? "pelapor" :
-                  loginRole === "Administrator" ? "admin" :
-                  loginRole === "Teknisi" ? "budi atau agus" :
-                  "manajer"
-                }
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Kata Sandi / PIN Simulasi</label>
-              <div className="password-input-container">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-input"
-                  placeholder={
-                    loginRole === "Pelapor" ? "pelapor123" :
-                    loginRole === "Administrator" ? "admin123" :
-                    loginRole === "Teknisi" ? "teknisi123" :
-                    "manajer123"
-                  }
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                >
-                  {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "18px", height: "18px" }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "18px", height: "18px" }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "10px", lineHeight: "1.5" }}>
-                Kredensial simulasi login:<br />
-                🔑 Pelapor: <code>pelapor</code> / <code>pelapor123</code><br />
-                🔑 Admin: <code>admin</code> / <code>admin123</code><br />
-                🔑 Teknisi: <code>budi</code> atau <code>agus</code> / <code>teknisi123</code><br />
-                🔑 Manajer: <code>manajer</code> / <code>manajer123</code>
-              </p>
-            </div>
-
-            <button type="submit" className="button-primary">Masuk Portal</button>
-          </form>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -517,74 +300,78 @@ export default function App() {
           </div>
         </div>
 
-        {/* Action controllers (Theme, User Profile, Logout) */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Admin Switcher (Only shown if logged in as Admin, for testing/grading) */}
-          {activeRole === "Administrator" && (
-            <div className="role-tabs" style={{ marginRight: "10px" }}>
-              <button className={`role-tab ${(activeRole as string) === "Administrator" ? "active" : ""}`} onClick={() => setActiveRole("Administrator")}>Admin</button>
-              <button className={`role-tab ${(activeRole as string) === "Pelapor" ? "active" : ""}`} onClick={() => setActiveRole("Pelapor")}>Pelapor</button>
-              <button className={`role-tab ${(activeRole as string) === "Teknisi" && activeName === "Budi (Teknisi)" ? "active" : ""}`} onClick={() => { setActiveRole("Teknisi"); setActiveName("Budi (Teknisi)"); }}>Budi</button>
-              <button className={`role-tab ${(activeRole as string) === "Teknisi" && activeName === "Agus (Teknisi)" ? "active" : ""}`} onClick={() => { setActiveRole("Teknisi"); setActiveName("Agus (Teknisi)"); }}>Agus</button>
-              <button className={`role-tab ${(activeRole as string) === "Manajer Fasilitas" ? "active" : ""}`} onClick={() => setActiveRole("Manajer Fasilitas")}>Manajer</button>
-            </div>
-          )}
-
-          {/* User Profile name tag */}
-          <span style={{ fontSize: "13px", fontWeight: "700", opacity: "0.9" }}>
-            👤 {activeName}
-          </span>
-
-          {/* Theme switcher */}
+        {/* Tab-styled Role selector controls */}
+        <div className="role-tabs">
           <button
-            className="button-secondary"
-            style={{ padding: "8px", borderRadius: "50%" }}
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle Theme"
+            className={`role-tab ${activeRole === "Pelapor" ? "active" : ""}`}
+            onClick={() => setActiveRole("Pelapor")}
           >
-            {theme === "dark" ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.364-6.364l-1.591 1.591M6.009 17.99l-1.591 1.591m12.982 0l-1.591-1.591M6.009 6.009L4.418 4.418m11.582 11.582A9 9 0 113.63 8.368a9 9 0 0012.37 12.37z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-              </svg>
-            )}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+            Pelapor
           </button>
-
-          {/* Log Out button */}
           <button
-            className="button-secondary"
-            style={{ borderColor: "rgba(244, 63, 94, 0.3)", color: "#f87171" }}
-            onClick={handleLogout}
+            className={`role-tab ${activeRole === "Administrator" ? "active" : ""}`}
+            onClick={() => setActiveRole("Administrator")}
           >
-            Keluar
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Admin
+          </button>
+          <button
+            className={`role-tab ${activeRole === "Teknisi - Budi" ? "active" : ""}`}
+            onClick={() => setActiveRole("Teknisi - Budi")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.67 2.67 0 0021 17.25l-5.83-5.83m-3.75 3.75l-3.75-3.75m3.75 3.75l1.58-1.58m-5.33-2.17l-5.83-5.83A2.67 2.67 0 015.75 3L11.58 8.83m-3.75 3.75l3.75 3.75m-3.75-3.75l-1.58 1.58m5.33 2.17l5.83 5.83A2.67 2.67 0 0118.25 21l-5.83-5.83m-3.75-3.75l3.75-3.75" />
+            </svg>
+            Teknisi Budi
+          </button>
+          <button
+            className={`role-tab ${activeRole === "Teknisi - Agus" ? "active" : ""}`}
+            onClick={() => setActiveRole("Teknisi - Agus")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.67 2.67 0 0021 17.25l-5.83-5.83m-3.75 3.75l-3.75-3.75m3.75 3.75l1.58-1.58m-5.33-2.17l-5.83-5.83A2.67 2.67 0 015.75 3L11.58 8.83m-3.75 3.75l3.75 3.75m-3.75-3.75l-1.58 1.58m5.33 2.17l5.83 5.83A2.67 2.67 0 0118.25 21l-5.83-5.83m-3.75-3.75l3.75-3.75" />
+            </svg>
+            Teknisi Agus
+          </button>
+          <button
+            className={`role-tab ${activeRole === "Manajer Fasilitas" ? "active" : ""}`}
+            onClick={() => setActiveRole("Manajer Fasilitas")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+            </svg>
+            Manajer
           </button>
         </div>
       </header>
 
+      {/* Alerts */}
       {successMessage && (
-        <div className="alert alert-success" style={{ margin: "0 0 24px 0" }}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" style={{ width: "20px", height: "20px" }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="alert alert-success" onClick={() => setSuccessMessage("")}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "20px", height: "20px" }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {successMessage}
         </div>
       )}
       {errorMessage && (
-        <div className="alert alert-error" style={{ margin: "0 0 24px 0" }}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" style={{ width: "20px", height: "20px" }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="alert alert-error" onClick={() => setErrorMessage("")}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "20px", height: "20px" }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           {errorMessage}
         </div>
       )}
 
-      {/* Regular views render based on role */}
+      {/* Manager Panel View */}
       {activeRole === "Manajer Fasilitas" ? (
         <div>
-          {/* Dashboard Summary cards */}
+          {/* Dashboard Summary grid */}
           <div className="dashboard-cards">
             <div className="card">
               <span className="card-title">Total Aduan Masuk</span>
@@ -608,7 +395,7 @@ export default function App() {
           </div>
 
           <div className="dashboard-grid">
-            {/* CSS-based Category Chart breakdown */}
+            {/* Left Column: Pure CSS Category Chart breakdown */}
             <div className="panel">
               <h2 className="panel-title">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -634,7 +421,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Reports table */}
+            {/* Right Column: Full reports overview */}
             <div className="panel">
               <h2 className="panel-title">Ringkasan Laporan Kampus (FM View)</h2>
               <div className="table-container">
@@ -681,9 +468,9 @@ export default function App() {
           </div>
         </div>
       ) : (
-        /* Regular Roles (Pelapor, Admin, Teknisi) layout grid */
+        /* Regular Roles Views */
         <div className="dashboard-grid">
-          {/* Left Column: Form Laporan or Info card */}
+          {/* Left Column: Form Laporan for Pelapor or Info panel */}
           <div>
             {activeRole === "Pelapor" ? (
               <div className="panel">
@@ -698,7 +485,7 @@ export default function App() {
                     <label className="form-label">Judul Masalah</label>
                     <input
                       type="text"
-                      className={`form-input ${title.trim().length > 0 ? "valid" : ""}`}
+                      className="form-input"
                       placeholder="Contoh: AC B302 Bocor"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
@@ -708,31 +495,18 @@ export default function App() {
                   <div className="form-group">
                     <label className="form-label">Deskripsi Kerusakan (Min. 20 Karakter)</label>
                     <textarea
-                      className={`form-textarea ${description.trim().length >= 20 ? "valid" : ""}`}
+                      className="form-textarea"
                       placeholder="Uraikan detail kerusakan fasilitas agar memudahkan teknisi memeriksa..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       required
                     />
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginTop: "6px", fontWeight: "600" }}>
-                      <span style={{ color: description.trim().length >= 20 ? "#10b981" : "#f43f5e" }}>
-                        {description.trim().length >= 20 
-                          ? "✓ Deskripsi memenuhi syarat" 
-                          : `Minimal 20 karakter: ${description.trim().length}/20`}
-                      </span>
-                    </div>
-                    <div className="char-counter-bar-outer">
-                      <div 
-                        className={`char-counter-bar-inner ${description.trim().length >= 20 ? "valid" : ""}`}
-                        style={{ width: `${Math.min(100, (description.trim().length / 20) * 100)}%` }}
-                      ></div>
-                    </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Lokasi Ruang / Gedung</label>
                     <input
                       type="text"
-                      className={`form-input ${location.trim().length > 0 ? "valid" : ""}`}
+                      className="form-input"
                       placeholder="Contoh: Gedung B, Ruang 302"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
@@ -742,7 +516,7 @@ export default function App() {
                   <div className="form-group">
                     <label className="form-label">Kategori Kerusakan</label>
                     <select
-                      className={`form-select ${category ? "valid" : ""}`}
+                      className="form-select"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                     >
@@ -753,13 +527,7 @@ export default function App() {
                       <option value="Sipil">Mebel & Dinding</option>
                     </select>
                   </div>
-                  <button type="submit" className="button-primary" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        Mengirim... <span className="spinner"></span>
-                      </>
-                    ) : "Kirim Laporan"}
-                  </button>
+                  <button type="submit" className="button-primary">Kirim Laporan</button>
                 </form>
               </div>
             ) : (
@@ -768,7 +536,7 @@ export default function App() {
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
-                  Informasi Akun
+                  Profil Pengguna
                 </h2>
                 <div style={{ background: "rgba(9, 9, 11, 0.3)", padding: "16px", borderRadius: "8px", border: "1px solid var(--panel-border)" }}>
                   <p style={{ fontSize: "14px", fontWeight: "700" }}>{activeName}</p>
@@ -807,40 +575,26 @@ export default function App() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="">⚙️ Semua Status</option>
-                <option value="SUBMITTED">📥 Submitted</option>
-                <option value="UNDER REVIEW">🔍 Under Review</option>
-                <option value="ASSIGNED">📋 Assigned</option>
-                <option value="IN PROGRESS">🛠️ In Progress</option>
-                <option value="RESOLVED">✅ Resolved</option>
-                <option value="CLOSED">🔒 Closed</option>
+                <option value="">Semua Status</option>
+                <option value="SUBMITTED">Submitted</option>
+                <option value="UNDER REVIEW">Under Review</option>
+                <option value="ASSIGNED">Assigned</option>
+                <option value="IN PROGRESS">In Progress</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="CLOSED">Closed</option>
               </select>
               <select
                 className="form-select filter-select"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               >
-                <option value="">📂 Semua Kategori</option>
-                <option value="AC">❄️ AC</option>
-                <option value="Listrik">⚡ Listrik</option>
-                <option value="Internet">🌐 Internet</option>
-                <option value="Kebersihan">🧹 Kebersihan</option>
-                <option value="Sipil">🧱 Sipil</option>
+                <option value="">Semua Kategori</option>
+                <option value="AC">AC</option>
+                <option value="Listrik">Listrik</option>
+                <option value="Internet">Internet</option>
+                <option value="Kebersihan">Kebersihan</option>
+                <option value="Sipil">Sipil</option>
               </select>
-              {(searchQuery || statusFilter || categoryFilter) && (
-                <button
-                  type="button"
-                  className="button-clear-filters"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setStatusFilter("");
-                    setCategoryFilter("");
-                  }}
-                  title="Bersihkan Filter"
-                >
-                  ❌ Hapus
-                </button>
-              )}
             </div>
 
             <div className="table-container">
@@ -1026,13 +780,13 @@ export default function App() {
                     </div>
 
                     <div className="form-group">
-                      <label className="form-label">Tugaskan Staf Teknisi</label>
+                      <label className="form-label">Tugaskan Teknisi Pelaksana</label>
                       <select
                         className="form-select"
                         value={detailData.request.assigned_technician || ""}
                         onChange={(e) => handleUpdateStatus(undefined, undefined, undefined, e.target.value || null)}
                       >
-                        <option value="">Pilih Teknisi</option>
+                        <option value="">Menunggu Pendelegasian</option>
                         <option value="Budi (Teknisi)">Budi (Teknisi AC/Listrik)</option>
                         <option value="Agus (Teknisi)">Agus (Teknisi Kebersihan)</option>
                       </select>
@@ -1089,7 +843,7 @@ export default function App() {
                       </>
                     ) : (
                       <p className="text-muted" style={{ fontSize: "12.5px" }}>
-                        Anda tidak ditugaskan untuk keluhan ini. Pembaruan progres hanya dapat diubah oleh teknisi yang ditugaskan.
+                        Anda tidak ditugaskan untuk keluhan ini. Pembaruan progres hanya dapat diubah oleh teknisi yang bersangkutan.
                       </p>
                     )}
                   </>
