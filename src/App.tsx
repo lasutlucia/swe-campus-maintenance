@@ -44,7 +44,7 @@ export default function App() {
   // Authentication State (Simulated)
   const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem("isLoggedIn") === "true");
   const [activeRole, setActiveRole] = useState(() => sessionStorage.getItem("activeRole") || "Pelapor");
-  const [activeName, setActiveName] = useState(() => sessionStorage.getItem("activeName") || "Rian (Mahasiswa)");
+  const [activeName, setActiveName] = useState(() => sessionStorage.getItem("activeName") || "Pelapor");
 
   // Login Form State
   const [loginRole, setLoginRole] = useState("Pelapor");
@@ -85,9 +85,9 @@ export default function App() {
 
   // Sync role switcher to role name on changes (For Admin simulator mode)
   useEffect(() => {
-    let name = "Rian (Mahasiswa)";
+    let name = "Pelapor";
     if (activeRole === "Pelapor") {
-      name = "Rian (Mahasiswa)";
+      name = "Pelapor";
     } else if (activeRole === "Administrator") {
       name = "Admin Sarpras";
     } else if (activeRole === "Teknisi - Budi") {
@@ -178,8 +178,8 @@ export default function App() {
     }
 
     // Set role identity
-    let name = "Rian (Mahasiswa)";
-    if (loginRole === "Pelapor") name = "Rian (Mahasiswa)";
+    let name = "Pelapor";
+    if (loginRole === "Pelapor") name = "Pelapor";
     else if (loginRole === "Administrator") name = "Admin Sarpras";
     else if (loginRole === "Teknisi - Budi") name = "Budi (Teknisi)";
     else if (loginRole === "Teknisi - Agus") name = "Agus (Teknisi)";
