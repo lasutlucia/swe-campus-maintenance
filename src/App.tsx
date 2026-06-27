@@ -71,7 +71,6 @@ export default function App() {
   const [description, setDescription] = useState("");
   const [building, setBuilding] = useState("");
   const [room, setRoom] = useState("");
-  const [category, setCategory] = useState("");
 
   // Comment Text
   const [commentText, setCommentText] = useState("");
@@ -224,7 +223,7 @@ export default function App() {
       const response = await fetch("/api/requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, location: `${building.trim()} - ${room.trim()}`, category }),
+        body: JSON.stringify({ title, description, location: `${building.trim()} - ${room.trim()}`, category: "Umum" }),
       });
       const result = await response.json();
 
@@ -239,7 +238,6 @@ export default function App() {
       setDescription("");
       setBuilding("");
       setRoom("");
-      setCategory("");
       await loadRequests();
     } catch (err) {
       setErrorMessage("Terjadi kesalahan jaringan saat mengirim laporan.");
@@ -685,7 +683,7 @@ export default function App() {
                   <thead>
                     <tr>
                       <th>No. Tiket</th>
-                      <th>Judul Aduan</th>
+                      <th>Laporan</th>
                       <th>Lokasi</th>
                       <th>Prioritas</th>
                       <th>Status</th>
@@ -738,7 +736,7 @@ export default function App() {
                 </h2>
                 <form onSubmit={handleSubmitRequest}>
                   <div className="form-group">
-                    <label className="form-label">Judul Masalah</label>
+                    <label className="form-label">Laporan Kerusakan</label>
                     <input
                       type="text"
                       className={`form-input ${title.trim().length > 0 ? "valid" : ""}`}
@@ -794,17 +792,6 @@ export default function App() {
                         required
                       />
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Kategori Kerusakan</label>
-                    <input
-                      type="text"
-                      className={`form-input ${category.trim().length > 0 ? "valid" : ""}`}
-                      placeholder="Masukkan kategori (contoh: Listrik, AC, Kebersihan, dll.)"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      required
-                    />
                   </div>
                   <button type="submit" className="button-primary" disabled={isSubmitting}>
                     {isSubmitting ? (
@@ -901,7 +888,7 @@ export default function App() {
                 <thead>
                   <tr>
                     <th>No. Tiket</th>
-                    <th>Judul Laporan</th>
+                    <th>Laporan</th>
                     <th>Lokasi</th>
                     <th>Prioritas</th>
                     <th>Status</th>
