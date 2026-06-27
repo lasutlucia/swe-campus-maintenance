@@ -74,6 +74,18 @@ export default {
       }
     }
 
+    // GET /api/technicians
+    if (url.pathname === "/api/technicians" && request.method === "GET") {
+      try {
+        const result = await env.DB.prepare(
+          "SELECT username, fullname FROM users WHERE LOWER(role) = 'teknisi'"
+        ).all() as { results: { username: string; fullname: string }[] };
+        return json({ data: result.results || [] });
+      } catch (err: any) {
+        return json({ error: "Gagal memuat daftar teknisi: " + err.message }, 500);
+      }
+    }
+
     // 2. GET /api/requests
     if (url.pathname === "/api/requests" && request.method === "GET") {
       const search = url.searchParams.get("search");

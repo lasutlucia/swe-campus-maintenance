@@ -58,6 +58,7 @@ export default function App() {
 
   // Lists & Filters
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [dbTechnicians, setDbTechnicians] = useState<{ username: string; fullname: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -134,9 +135,23 @@ export default function App() {
     }
   }
 
+  // Load technicians list from database
+  async function loadTechnicians() {
+    try {
+      const response = await fetch("/api/technicians");
+      const result = await response.json();
+      if (response.ok) {
+        setDbTechnicians(result.data || []);
+      }
+    } catch (err) {
+      console.error("Gagal memuat teknisi:", err);
+    }
+  }
+
   useEffect(() => {
     if (isLoggedIn) {
       loadRequests();
+      loadTechnicians();
     }
   }, [searchQuery, statusFilter, categoryFilter, activeRole, activeName, isLoggedIn]);
 
@@ -1077,10 +1092,21 @@ export default function App() {
                         onChange={(e) => handleUpdateStatus(undefined, undefined, undefined, e.target.value || null)}
                       >
                         <option value="">Pilih Teknisi</option>
-                        <option value="Pak Budi (Teknisi)">Pak Budi (Teknisi AC/Listrik)</option>
-                        <option value="Pak Eko (Teknisi)">Pak Eko (Teknisi Listrik/Mekanikal)</option>
-                        <option value="Ibu Rika (Teknisi)">Ibu Rika (Teknisi Kebersihan)</option>
-                        <option value="Pak Danang (Teknisi)">Pak Danang (Teknisi Umum)</option>
+                        {dbTechnicians.length > 0 ? (
+                          dbTechnicians.map((tech) => (
+                            <option key={tech.username} value={tech.fullname}>
+                              {tech.fullname}
+                            </option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="Andi">Andi</option>
+                            <option value="Pak Budi (Teknisi)">Pak Budi (Teknisi AC/Listrik)</option>
+                            <option value="Pak Eko (Teknisi)">Pak Eko (Teknisi Listrik/Mekanikal)</option>
+                            <option value="Ibu Rika (Teknisi)">Ibu Rika (Teknisi Kebersihan)</option>
+                            <option value="Pak Danang (Teknisi)">Pak Danang (Teknisi Umum)</option>
+                          </>
+                        )}
                       </select>
                     </div>
 
