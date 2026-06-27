@@ -8,12 +8,12 @@
 - **Anggota tim**: Individu
 - **Repository URL**: https://github.com/lasutlucia/SWE-campus-maintenance
 - **Cloudflare URL**: https://campus-maintenance.lasutlucia.workers.dev
-- **Commit Terakhir**: `313a6cb`
+- **Commit Terakhir**: `6a35a0d`
 - **Jumlah Test**: 20 automated tests (semuanya PASS)
 - **AI yang Digunakan**: Antigravity (Google DeepMind Team)
 - **Known Limitations (Keterbatasan Sistem)**:
-  1. Fitur unggah gambar ditiadakan sesuai spesifikasi untuk menghindari penggunaan object storage eksternal berbayar.
-  2. Sistem login menggunakan simulasi *Role Switcher* di frontend, bukan sistem otentikasi sesi JWT/OAuth formal demi kemudahan pengujian.
+  1. Fitur unggah gambar ditiadaan sesuai spesifikasi untuk menghindari penggunaan object storage eksternal berbayar.
+  2. Sistem login menggunakan kueri langsung ke database D1 Cloudflare (tabel `users`) dengan input username dan password masing-masing role secara aman.
   3. Log aktivitas riwayat status disimpan dalam tabel log, namun tidak mencakup pengiriman notifikasi email real-time.
 
 ---
