@@ -838,35 +838,39 @@ export default function App() {
               <input
                 type="text"
                 className="form-input search-input"
-                placeholder="Cari nomor tiket, judul, lokasi..."
+                placeholder="Cari nomor tiket, laporan, lokasi..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <select
-                className="form-select filter-select"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="">⚙️ Semua Status</option>
-                <option value="SUBMITTED">📥 Submitted</option>
-                <option value="UNDER REVIEW">🔍 Under Review</option>
-                <option value="ASSIGNED">📋 Assigned</option>
-                <option value="IN PROGRESS">🛠️ In Progress</option>
-                <option value="RESOLVED">✅ Resolved</option>
-                <option value="CLOSED">🔒 Closed</option>
-              </select>
-              <select
-                className="form-select filter-select"
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-              >
-                <option value="">📂 Semua Kategori</option>
-                <option value="AC">❄️ AC</option>
-                <option value="Listrik">⚡ Listrik</option>
-                <option value="Internet">🌐 Internet</option>
-                <option value="Kebersihan">🧹 Kebersihan</option>
-                <option value="Sipil">🧱 Sipil</option>
-              </select>
+              {activeRole !== "Pelapor" && (
+                <>
+                  <select
+                    className="form-select filter-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="">⚙️ Semua Status</option>
+                    <option value="SUBMITTED">📥 Submitted</option>
+                    <option value="UNDER REVIEW">🔍 Under Review</option>
+                    <option value="ASSIGNED">📋 Assigned</option>
+                    <option value="IN PROGRESS">🛠️ In Progress</option>
+                    <option value="RESOLVED">✅ Resolved</option>
+                    <option value="CLOSED">🔒 Closed</option>
+                  </select>
+                  <select
+                    className="form-select filter-select"
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                  >
+                    <option value="">📂 Semua Kategori</option>
+                    <option value="AC">❄️ AC</option>
+                    <option value="Listrik">⚡ Listrik</option>
+                    <option value="Internet">🌐 Internet</option>
+                    <option value="Kebersihan">🧹 Kebersihan</option>
+                    <option value="Sipil">🧱 Sipil</option>
+                  </select>
+                </>
+              )}
               {(searchQuery || statusFilter || categoryFilter) && (
                 <button
                   type="button"
