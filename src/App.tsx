@@ -69,7 +69,8 @@ export default function App() {
   // Form Fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
+  const [building, setBuilding] = useState("");
+  const [room, setRoom] = useState("");
   const [category, setCategory] = useState("");
 
   // Comment Text
@@ -223,7 +224,7 @@ export default function App() {
       const response = await fetch("/api/requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, location, category }),
+        body: JSON.stringify({ title, description, location: `${building.trim()} - ${room.trim()}`, category }),
       });
       const result = await response.json();
 
@@ -236,7 +237,8 @@ export default function App() {
       setSuccessMessage(`Laporan berhasil dikirim! Nomor Tiket: ${result.requestNumber}`);
       setTitle("");
       setDescription("");
-      setLocation("");
+      setBuilding("");
+      setRoom("");
       setCategory("");
       await loadRequests();
     } catch (err) {
@@ -769,16 +771,29 @@ export default function App() {
                       ></div>
                     </div>
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Lokasi Ruang / Gedung</label>
-                    <input
-                      type="text"
-                      className={`form-input ${location.trim().length > 0 ? "valid" : ""}`}
-                      placeholder="Contoh: Gedung B, Ruang 302"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                    />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="form-group">
+                      <label className="form-label">Lokasi Gedung</label>
+                      <input
+                        type="text"
+                        className={`form-input ${building.trim().length > 0 ? "valid" : ""}`}
+                        placeholder="Contoh: Gedung B"
+                        value={building}
+                        onChange={(e) => setBuilding(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Lokasi Ruangan</label>
+                      <input
+                        type="text"
+                        className={`form-input ${room.trim().length > 0 ? "valid" : ""}`}
+                        placeholder="Contoh: Ruang 302"
+                        value={room}
+                        onChange={(e) => setRoom(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Kategori Kerusakan</label>
