@@ -167,14 +167,18 @@ export default function App() {
         return;
       }
 
-      // Map role from DB to frontend activeRole format
+      // Map role from DB to frontend activeRole format (Case-insensitive)
+      const roleUpper = result.role ? result.role.toUpperCase().trim() : "";
       let mappedRole = "Pelapor";
-      if (result.role === "ADMINISTRATOR") {
+      
+      if (roleUpper === "ADMINISTRATOR" || roleUpper === "ADMIN") {
         mappedRole = "Administrator";
-      } else if (result.role === "TEKNISI") {
+      } else if (roleUpper === "TEKNISI") {
         mappedRole = "Teknisi";
-      } else if (result.role === "MANAJER") {
+      } else if (roleUpper === "MANAJER" || roleUpper === "MANAGER") {
         mappedRole = "Manajer Fasilitas";
+      } else {
+        mappedRole = "Pelapor"; // Mahasiswa, Dosen, Pelapor default to student dashboard
       }
 
       sessionStorage.setItem("isLoggedIn", "true");
