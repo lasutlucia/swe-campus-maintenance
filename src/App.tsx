@@ -382,6 +382,7 @@ export default function App() {
 
   function getPriorityBadgeClass(priority: string) {
     switch (priority) {
+      case "NONE": return "badge-priority-none";
       case "LOW": return "badge-priority-low";
       case "MEDIUM": return "badge-priority-medium";
       case "HIGH": return "badge-priority-high";
@@ -764,7 +765,7 @@ export default function App() {
                           <td>{req.location}</td>
                           <td>
                             <span className={`badge ${getPriorityBadgeClass(req.priority)}`}>
-                              {req.priority}
+                              {req.priority === "NONE" ? "Belum Ditentukan" : req.priority}
                             </span>
                           </td>
                           <td>
@@ -963,7 +964,7 @@ export default function App() {
                         <td>{req.location}</td>
                         <td>
                           <span className={`badge ${getPriorityBadgeClass(req.priority)}`}>
-                            {req.priority}
+                            {req.priority === "NONE" ? "Belum Ditentukan" : req.priority}
                           </span>
                         </td>
                         <td>
@@ -1066,7 +1067,7 @@ export default function App() {
                   <span className="info-label">Prioritas Penanganan</span>
                   <span className="info-value">
                     <span className={`badge ${getPriorityBadgeClass(detailData.request.priority)}`}>
-                      {detailData.request.priority}
+                      {detailData.request.priority === "NONE" ? "Belum Ditentukan" : detailData.request.priority}
                     </span>
                   </span>
                 </div>
@@ -1134,18 +1135,7 @@ export default function App() {
                       </button>
                     )}
 
-                    <div className="form-group">
-                      <label className="form-label">Tingkat Prioritas</label>
-                      <select
-                        className="form-select"
-                        value={detailData.request.priority}
-                        onChange={(e) => handleUpdateStatus(undefined, e.target.value)}
-                      >
-                        <option value="LOW">LOW</option>
-                        <option value="MEDIUM">MEDIUM</option>
-                        <option value="HIGH">HIGH</option>
-                      </select>
-                    </div>
+
 
                     <div className="form-group">
                       <label className="form-label">Tugaskan Staf Teknisi</label>
@@ -1199,6 +1189,19 @@ export default function App() {
                   <>
                     {detailData.request.assigned_technician === activeName ? (
                       <>
+                        <div className="form-group" style={{ marginBottom: "16px" }}>
+                          <label className="form-label" style={{ fontSize: "12.5px" }}>Tentukan Tingkat Prioritas</label>
+                          <select
+                            className="form-select"
+                            value={detailData.request.priority || "NONE"}
+                            onChange={(e) => handleUpdateStatus(undefined, e.target.value)}
+                          >
+                            <option value="NONE">Belum Ditentukan</option>
+                            <option value="LOW">LOW</option>
+                            <option value="MEDIUM">MEDIUM</option>
+                            <option value="HIGH">HIGH</option>
+                          </select>
+                        </div>
                         {detailData.request.status === "ASSIGNED" && (
                           <button
                             className="button-primary"

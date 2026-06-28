@@ -458,6 +458,7 @@ body {
 .badge-priority-low { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
 .badge-priority-medium { background: rgba(234, 179, 8, 0.12); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.2); }
 .badge-priority-high { background: rgba(244, 63, 94, 0.12); color: #f87171; border: 1px solid rgba(244, 63, 94, 0.2); }
+.badge-priority-none { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); border: 1px solid var(--panel-border); }
 
 /* Interactive Workflow Stepper */
 .workflow-stepper {

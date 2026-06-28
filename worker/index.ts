@@ -145,7 +145,7 @@ export default {
       // Insert service request
       await env.DB.prepare(`
         INSERT INTO service_requests (id, request_number, title, description, location, category, priority, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'MEDIUM', 'SUBMITTED')
+        VALUES (?, ?, ?, ?, ?, ?, 'NONE', 'SUBMITTED')
       `).bind(
         id,
         requestNumber,
@@ -278,8 +278,10 @@ export default {
         }
 
         if (priority && priority !== current.priority) {
-          if (role !== "Administrator") {
-            return json({ error: "Hanya Administrator yang dapat mengubah prioritas." }, 400);
+          const isAdmin = (role === "Administrator" || role === "ADMIN");
+          const isAssignedTech = (role === "Teknisi" && current.assigned_technician === name);
+          if (!isAdmin && !isAssignedTech) {
+            return json({ error: "Hanya Administrator atau Staf Teknisi yang ditugaskan yang dapat menentukan tingkat prioritas." }, 400);
           }
           updateFields.push("priority = ?");
           updateParams.push(priority);
