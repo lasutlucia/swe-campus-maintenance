@@ -107,6 +107,7 @@ body {
   margin: 0 auto;
   padding: 30px 20px;
   animation: fadeInUp 0.6s ease-out;
+  text-align: left;
 }
 
 /* Header UI */

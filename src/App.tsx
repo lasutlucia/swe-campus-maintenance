@@ -451,7 +451,7 @@ export default function App() {
   // Render Login screen if not authenticated
   if (!isLoggedIn) {
     return (
-      <div className="app-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "90vh" }}>
+      <div className="app-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "90vh", textAlign: "center" }}>
         <div className={`panel ${loginFailed ? "shake-error" : ""}`} style={{ width: "100%", maxWidth: "450px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <div className="brand-section">
@@ -1049,6 +1049,7 @@ export default function App() {
               </div>
             )}
 
+            <span className="info-label" style={{ display: "block", marginBottom: "8px" }}>Deskripsi Laporan</span>
             <p style={{ fontSize: "14.5px", background: "rgba(255, 255, 255, 0.02)", padding: "18px", borderRadius: "8px", border: "1px solid var(--panel-border)", marginBottom: "20px" }}>
               {detailData.request.description}
             </p>
