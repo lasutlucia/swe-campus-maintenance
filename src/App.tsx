@@ -205,7 +205,7 @@ export default function App() {
         mappedRole = "Administrator";
       } else if (roleUpper === "TEKNISI") {
         mappedRole = "Teknisi";
-      } else if (roleUpper === "MANAJER" || roleUpper === "MANAGER") {
+      } else if (roleUpper === "MANAJER" || roleUpper === "MANAGER" || roleUpper === "MANAJER FASILITAS" || roleUpper === "FACILITY MANAGER") {
         mappedRole = "Manajer Fasilitas";
       } else {
         mappedRole = "Pelapor"; // Mahasiswa, Dosen, Pelapor default to student dashboard
