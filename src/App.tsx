@@ -100,9 +100,7 @@ export default function App() {
       const url = new URL("/api/requests", window.location.origin);
       if (searchQuery) url.searchParams.set("search", searchQuery);
 
-      if (activeRole.startsWith("Teknisi")) {
-        url.searchParams.set("technician", activeName);
-      }
+
 
       const response = await fetch(url.toString());
       const result = await response.json();
@@ -145,10 +143,15 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (!isLoggedIn) return;
+    loadRequests();
+    loadTechnicians();
+
+    const interval = setInterval(() => {
       loadRequests();
-      loadTechnicians();
-    }
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, [searchQuery, activeRole, activeName, isLoggedIn]);
 
   useEffect(() => {
@@ -161,9 +164,14 @@ export default function App() {
   }, [searchQuery, requests, activeRole]);
 
   useEffect(() => {
-    if (selectedRequestId && isLoggedIn) {
+    if (!selectedRequestId || !isLoggedIn) return;
+    loadRequestDetail(selectedRequestId);
+
+    const interval = setInterval(() => {
       loadRequestDetail(selectedRequestId);
-    }
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, [selectedRequestId, isLoggedIn]);
 
   // Perform database-driven login check
