@@ -462,7 +462,7 @@ export default function App() {
                 </svg>
               </div>
               <div className="brand-text">
-                <h1>Campus Portal</h1>
+                <h1>Campus Maintenance</h1>
                 <p>{loginStep === "role" ? "Pilih peran Anda untuk masuk" : "Masukkan kredensial akun Anda"}</p>
               </div>
             </div>
@@ -602,7 +602,7 @@ export default function App() {
                 </div>
               </div>
 
-              <button type="submit" className="button-primary">Masuk Portal</button>
+              <button type="submit" className="button-primary">Masuk Aplikasi</button>
             </form>
           )}
         </div>
