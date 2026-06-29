@@ -6,12 +6,12 @@ Dokumen ini mendokumentasikan 10 GitHub Issues yang dibuat untuk melacak tugas p
 
 ## 1. Issue #1: [FR-01] Pembuatan Laporan Baru
 ### Requirement
-- FR-01: Pelapor dapat membuat laporan baru dengan menginput judul, deskripsi, lokasi, dan kategori masalah.
+- FR-01: Pelapor dapat membuat laporan baru dengan menginput aduan laporan (judul), deskripsi, lokasi gedung, dan lokasi ruangan secara terpisah.
 ### User Story
 - US-01: Sebagai Pelapor, saya ingin melaporkan masalah fasilitas agar kerusakan segera diperbaiki.
 ### Acceptance Criteria
-- AC-01-01: Halaman menyediakan form dengan input: Judul Laporan, Deskripsi Masalah, Lokasi Gedung/Ruang, dan Dropdown Kategori.
-- AC-01-02: Sistem menyimpan data jika input yang diberikan valid.
+- AC-01-01: Halaman menyediakan form dengan input: Laporan Kerusakan (Judul), Deskripsi Masalah, Lokasi Gedung, dan Lokasi Ruangan secara terpisah.
+- AC-01-02: Sistem menggabungkan lokasi gedung dan ruangan di latar belakang serta mengembalikan pesan error jika ada field kosong atau deskripsi < 20 karakter.
 ### Pekerjaan
 - [x] Buat form pelaporan di frontend (`src/App.tsx`).
 - [x] Buat endpoint `POST /api/requests` di backend (`worker/index.ts`).

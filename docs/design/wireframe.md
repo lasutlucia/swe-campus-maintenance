@@ -46,7 +46,7 @@ Dokumen ini mendeskripsikan tata letak (*layout*) dan komponen antarmuka penggun
 │  ┌─────────────────────────────────────────┐  ┌─────────────────────────────────────┐  │
 │  │ Detail Informasi                        │  │ Tindakan & Komentar                 │  │
 │  ├─────────────────────────────────────────┤  ├─────────────────────────────────────┤  │
-│  │ Lokasi: Gedung B, Ruang 302             │  │ Pilihan Prioritas: (Admin-only)     │  │
+│  │ Lokasi: Gedung B, Ruang 302             │  │ Pilihan Prioritas: (Teknisi-only)   │  │
 │  │ Kategori: AC                            │  │ [ HIGH v ]                          │  │
 │  │ Prioritas: [ MEDIUM ]                   │  │                                     │  │
 │  │ Status: [ SUBMITTED ]                   │  │ Tugaskan Teknisi: (Admin-only)      │  │
