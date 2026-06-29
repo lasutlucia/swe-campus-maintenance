@@ -155,13 +155,19 @@ export default function App() {
   }, [searchQuery, activeRole, activeName, isLoggedIn]);
 
   useEffect(() => {
-    if (searchQuery && requests.length > 0 && activeRole !== "Pelapor") {
+    if (searchQuery && requests.length > 0) {
       const sorted = getSortedRequests();
-      if (sorted.length > 0) {
-        setSelectedRequestId(sorted[0].id);
+      const query = searchQuery.toLowerCase().trim();
+      const firstMatch = sorted.find(r => 
+        (r.title || "").toLowerCase().includes(query) || 
+        (r.location || "").toLowerCase().includes(query) ||
+        (r.request_number || "").toLowerCase().includes(query)
+      );
+      if (firstMatch) {
+        setSelectedRequestId(firstMatch.id);
       }
     }
-  }, [searchQuery, requests, activeRole]);
+  }, [searchQuery, requests]);
 
   useEffect(() => {
     if (!selectedRequestId || !isLoggedIn) return;
@@ -425,6 +431,16 @@ export default function App() {
     const count = requests.filter(r => r.category === catName).length;
     const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
     return { count, percentage };
+  }
+
+  function isSearchMatch(req: ServiceRequest) {
+    if (!searchQuery) return false;
+    const query = searchQuery.toLowerCase().trim();
+    return (
+      (req.title || "").toLowerCase().includes(query) ||
+      (req.location || "").toLowerCase().includes(query) ||
+      (req.request_number || "").toLowerCase().includes(query)
+    );
   }
 
   // Get sorted requests for search priority
@@ -757,7 +773,7 @@ export default function App() {
                       getSortedRequests().map((req) => (
                         <tr 
                           key={req.id} 
-                          className={selectedRequestId === req.id ? "active-row" : ""}
+                          className={`${selectedRequestId === req.id ? "active-row" : ""} ${isSearchMatch(req) ? "search-match-row" : ""}`.trim()}
                           onClick={() => setSelectedRequestId(req.id)}
                         >
                           <td className="text-bold">{req.request_number}</td>
@@ -956,7 +972,7 @@ export default function App() {
                     getSortedRequests().map((req) => (
                       <tr 
                         key={req.id} 
-                        className={selectedRequestId === req.id ? "active-row" : ""}
+                        className={`${selectedRequestId === req.id ? "active-row" : ""} ${isSearchMatch(req) ? "search-match-row" : ""}`.trim()}
                         onClick={() => setSelectedRequestId(req.id)}
                       >
                         <td className="text-bold">{req.request_number}</td>

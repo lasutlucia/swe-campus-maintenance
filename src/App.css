@@ -1085,3 +1085,22 @@ body {
   white-space: nowrap;
 }
 
+/* Search match highlight animation row */
+.search-match-row {
+  background: rgba(99, 102, 241, 0.07) !important;
+  border-left: 3px solid var(--accent-color) !important;
+  animation: searchRowPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes searchRowPulse {
+  0% {
+    background: rgba(99, 102, 241, 0.07);
+  }
+  50% {
+    background: rgba(99, 102, 241, 0.16);
+  }
+  100% {
+    background: rgba(99, 102, 241, 0.07);
+  }
+}
+
