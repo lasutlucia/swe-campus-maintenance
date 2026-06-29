@@ -155,21 +155,6 @@ export default function App() {
   }, [searchQuery, activeRole, activeName, isLoggedIn]);
 
   useEffect(() => {
-    if (searchQuery && requests.length > 0) {
-      const sorted = getSortedRequests();
-      const query = searchQuery.toLowerCase().trim();
-      const firstMatch = sorted.find(r => 
-        (r.title || "").toLowerCase().includes(query) || 
-        (r.location || "").toLowerCase().includes(query) ||
-        (r.request_number || "").toLowerCase().includes(query)
-      );
-      if (firstMatch) {
-        setSelectedRequestId(firstMatch.id);
-      }
-    }
-  }, [searchQuery, requests]);
-
-  useEffect(() => {
     if (!selectedRequestId || !isLoggedIn) return;
     loadRequestDetail(selectedRequestId);
 
