@@ -453,9 +453,9 @@ export default function App() {
   if (!isLoggedIn) {
     return (
       <div className="app-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "90vh", textAlign: "center" }}>
-        <div className={`panel ${loginFailed ? "shake-error" : ""}`} style={{ width: "100%", maxWidth: "450px", position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", paddingRight: "40px" }}>
-            <div className="brand-section">
+        <div className={`panel ${loginFailed ? "shake-error" : ""}`} style={{ width: "100%", maxWidth: "450px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "24px", width: "100%" }}>
+            <div className="brand-section" style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left", flex: 1 }}>
               <div className="brand-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" style={{ width: "24px", height: "24px", color: "#fff" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -466,25 +466,24 @@ export default function App() {
                 <p>{loginStep === "role" ? "Pilih peran Anda untuk masuk" : "Masukkan kredensial akun Anda"}</p>
               </div>
             </div>
+            {/* Theme switcher */}
+            <button
+              className="button-secondary"
+              style={{ padding: "8px", borderRadius: "50%", flexShrink: 0 }}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.364-6.364l-1.591 1.591M6.009 17.99l-1.591 1.591m12.982 0l-1.591-1.591M6.009 6.009L4.418 4.418m11.582 11.582A9 9 0 113.63 8.368a9 9 0 0012.37 12.37z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                </svg>
+              )}
+            </button>
           </div>
-          {/* Theme switcher (absolutely positioned) */}
-          <button
-            className="button-secondary"
-            style={{ position: "absolute", top: "24px", right: "24px", padding: "8px", borderRadius: "50%", zIndex: 10 }}
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle Theme"
-          >
-            {theme === "dark" ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.364-6.364l-1.591 1.591M6.009 17.99l-1.591 1.591m12.982 0l-1.591-1.591M6.009 6.009L4.418 4.418m11.582 11.582A9 9 0 113.63 8.368a9 9 0 0012.37 12.37z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" style={{ width: "16px", height: "16px" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-              </svg>
-            )}
-          </button>
-
           {loginError && (
             <div className="alert alert-error" style={{ padding: "10px 14px", fontSize: "13px" }}>
               {loginError}
