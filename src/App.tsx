@@ -526,7 +526,7 @@ export default function App() {
                   setLoginError("");
                 }}
               >
-                <span className="role-button-title">⚙️ Administrator Sarpras</span>
+                <span className="role-button-title">⚙️ Administrator</span>
                 <span className="role-button-arrow">➔</span>
               </button>
               <button
@@ -556,7 +556,7 @@ export default function App() {
               </button>
 
               <h2 style={{ fontSize: "15px", fontWeight: "700", marginBottom: "20px", color: "var(--accent-color)" }}>
-                Masuk sebagai {loginRole === "Manajer Fasilitas" ? "Manajer Fasilitas (FM)" : loginRole === "Pelapor" ? "Pelapor (Mahasiswa/Dosen)" : loginRole === "Administrator" ? "Administrator Sarpras" : "Staf Teknisi"}
+                Masuk sebagai {loginRole === "Manajer Fasilitas" ? "Manajer Fasilitas (FM)" : loginRole === "Pelapor" ? "Pelapor (Mahasiswa/Dosen)" : loginRole === "Administrator" ? "Administrator" : "Staf Teknisi"}
               </h2>
 
               <div className="form-group">
@@ -1239,7 +1239,7 @@ export default function App() {
                 {activeRole === "Pelapor" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     <p className="text-secondary" style={{ fontSize: "13px" }}>
-                      Status laporan ini diproses oleh Administrator Sarpras. Anda dapat memberikan komentar balasan pada kolom komentar di bawah ini.
+                      Status laporan ini diproses oleh Administrator. Anda dapat memberikan komentar balasan pada kolom komentar di bawah ini.
                     </p>
                     {detailData.request.status === "RESOLVED" && (
                       <div style={{ marginTop: "8px", padding: "12px", background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "8px" }}>
