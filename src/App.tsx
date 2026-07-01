@@ -410,10 +410,25 @@ export default function App() {
     return "step-node";
   }
 
+  function inferCategory(title: string, category: string): string {
+    const defaultCats = ["AC", "Listrik", "Internet", "Kebersihan", "Sipil"];
+    const cleanCat = (category || "").trim();
+    if (defaultCats.includes(cleanCat)) {
+      return cleanCat;
+    }
+    const t = (title || "").toLowerCase();
+    if (t.includes("ac")) return "AC";
+    if (t.includes("listrik") || t.includes("lampu") || t.includes("kabel")) return "Listrik";
+    if (t.includes("internet") || t.includes("wifi") || t.includes("jaringan") || t.includes("koneksi")) return "Internet";
+    if (t.includes("bersih") || t.includes("kotor") || t.includes("sampah") || t.includes("debu")) return "Kebersihan";
+    if (t.includes("pintu") || t.includes("jendela") || t.includes("atap") || t.includes("bocor") || t.includes("dinding") || t.includes("tembok") || t.includes("sipil")) return "Sipil";
+    return cleanCat || "Umum";
+  }
+
   // CSS bar chart calculator for manager stats
   const totalCount = requests.length;
   function getCategoryStats(catName: string) {
-    const count = requests.filter(r => r.category === catName).length;
+    const count = requests.filter(r => inferCategory(r.title, r.category) === catName).length;
     const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
     return { count, percentage };
   }
@@ -422,7 +437,7 @@ export default function App() {
     const defaultCategories = ["AC", "Listrik", "Internet", "Kebersihan", "Sipil"];
     const list = [...defaultCategories];
     requests.forEach(r => {
-      const cat = r.category || "Umum";
+      const cat = inferCategory(r.title, r.category);
       if (!list.includes(cat)) {
         list.push(cat);
       }
@@ -1074,7 +1089,7 @@ export default function App() {
                 </div>
                 <div className="info-item">
                   <span className="info-label">Kategori Masalah</span>
-                  <span className="info-value">{detailData.request.category}</span>
+                  <span className="info-value">{inferCategory(detailData.request.title, detailData.request.category)}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Prioritas Penanganan</span>
