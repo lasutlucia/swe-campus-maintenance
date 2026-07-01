@@ -418,6 +418,18 @@ export default function App() {
     return { count, percentage };
   }
 
+  function getCategoriesList() {
+    const defaultCategories = ["AC", "Listrik", "Internet", "Kebersihan", "Sipil"];
+    const list = [...defaultCategories];
+    requests.forEach(r => {
+      const cat = r.category || "Umum";
+      if (!list.includes(cat)) {
+        list.push(cat);
+      }
+    });
+    return list;
+  }
+
   function isSearchMatch(req: ServiceRequest) {
     if (!searchQuery) return false;
     const query = searchQuery.toLowerCase().trim();
@@ -716,7 +728,7 @@ export default function App() {
               </h2>
               <p className="text-secondary" style={{ fontSize: "13px" }}>Persentase kontribusi laporan berdasarkan kategori fasilitas:</p>
               <div className="chart-bar-container">
-                {["AC", "Listrik", "Internet", "Kebersihan", "Sipil"].map(catName => {
+                {getCategoriesList().map(catName => {
                   const stats = getCategoryStats(catName);
                   return (
                     <div className="chart-bar-row" key={catName}>
